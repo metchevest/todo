@@ -2,13 +2,24 @@ import React from 'react';
 
 export const TodoItem = ({ item, onToggleCompleted, onDelete }) => {
 
+    const handleInputClick = () => {
+        onToggleCompleted(item.id);
+    }
+
     return (
         <li
-            key={item.id}
             className={item.completed ? "completed" : "notCompleted"}>
             {item.task}
-            <button className="delete-btn" onClick={() => onDelete(item.id)}>X</button>
-            <button className="toggle-btn" onClick={() => onToggleCompleted(item.id)}> Hecho</button>
-        </li >
+            <button
+                className="delete-btn"
+                onClick={() => onDelete(item.id)}>X</button>
+            <input
+                type="checkbox"
+                checked={item.completed}
+                onChange={handleInputClick}
+            />
+        </li>
     );
 }
+
+/* onChange={() => onToggleCompleted(item.id)} */
