@@ -33,3 +33,10 @@ li{
     margin: 5px;
     border: 1px solid black;    
 }
+
+.pokeName {
+    border: 1px solid red;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 3px;
+}

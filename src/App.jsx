@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import { TodoList } from './components/TodoList';
 import './App.css';
-import { hasPointerEvents } from '@testing-library/user-event/dist/utils';
 
 export const App = () => {
 
@@ -34,7 +33,8 @@ export const App = () => {
     ];
 
 
-    const [todos, setTodos] = useState(JSON.parse(localStorage.getItem('todos')) || todoList);
+    const [todos, setTodos] = useState(todoList);
+    const [pokeApiData, setPokeApiData] = useState([]);
 
     const todoTaskRef = useRef();
 
@@ -44,7 +44,7 @@ export const App = () => {
         const newTodos = [...todos, { id: Date.now(), task: taskText, completed: false, urgent: false }]
         setTodos(newTodos);
         todoTaskRef.current.value = '';
-        localStorage.setItem('todos', JSON.stringify(newTodos));
+
     }
 
     const onToggleCompleted = (id) => {
@@ -61,10 +61,34 @@ export const App = () => {
     }
 
     useEffect(() => {
-        console.log('estoy ejecutando el efecto ahora');
+        const taskFromStorage = JSON.parse(localStorage.getItem('tareas'));
+        if (taskFromStorage) {
+            setTodos(taskFromStorage)
+        }
     }, []);
 
-    console.log('paso por el render');
+    useEffect(() => {
+        localStorage.setItem('tareas', JSON.stringify(todos));
+    }, [todos]);
+
+    const callPokeApi = async () => {
+        const response = await fetch('https://pokeapi.co/api/v2/location/');
+        const result = await response.json();
+        return result;
+    }
+
+    useEffect(() => {
+
+        async function fetchData() {
+            const { results } = await callPokeApi();
+            setPokeApiData(results);
+        }
+
+        fetchData();
+    }, []);
+
+
+    console.log('paso por el render', pokeApiData);
     return (
         <div className='app'>
             <h1> ToDo List </h1>
@@ -74,5 +98,12 @@ export const App = () => {
                 onDelete={onDelete} />
             <input ref={todoTaskRef} type="text" />
             <button onClick={handleTodoAdd}> Agregar tarea</button>
+
+            <div>
+                {pokeApiData.map(elem =>
+                    <div className="pokeName" key={elem.url}>
+                        {elem.name}
+                    </div>)}
+            </div>
         </div>);
 }
